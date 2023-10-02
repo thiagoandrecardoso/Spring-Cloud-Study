@@ -13,7 +13,8 @@ Considere a hipótese de que milhares de clientes estejam enviando requisições
 - **Concorrência**: Múltiplos clientes fazendo requisições simultâneas podem criar problemas de concorrência. Se o microserviço não for projetado para lidar com múltiplos threads/processos de maneira eficiente, podem ocorrer condições de corrida e inconsistências nos dados.
 
 **Bad Architecture:**
-![[Pasted image 20230920204356.png]]
+![Exemplo de Imagem](imagem/Pasted image 20230920204356.png)
+
 
 Se tentar resolver criando várias portas, como a 8081, 8082... Você terá que criar várias DNS:
 http://empresa.com/api/clientes deixando assim, impossível de ser gerenciado. 
