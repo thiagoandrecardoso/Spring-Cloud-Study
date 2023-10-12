@@ -1,5 +1,3 @@
-# Spring Cloud
-
 ## Preparação do ambiente:
 - JDK 11.0.15;
 - Docker;
@@ -13,18 +11,13 @@ Considere a hipótese de que milhares de clientes estejam enviando requisições
 - **Concorrência**: Múltiplos clientes fazendo requisições simultâneas podem criar problemas de concorrência. Se o microserviço não for projetado para lidar com múltiplos threads/processos de maneira eficiente, podem ocorrer condições de corrida e inconsistências nos dados.
 
 **Bad Architecture:**
-
-
-<img width="817" alt="Pasted image 20230920204356" src="https://github.com/thiagoandrecardoso/Spring-Cloud-Study/assets/33556919/2f751724-6d17-4f47-ad17-4a4f9aa1efc1">
-
+![[Pasted image 20230920204356.png]]
 
 Se tentar resolver criando várias portas, como a 8081, 8082... Você terá que criar várias DNS:
 http://empresa.com/api/clientes deixando assim, impossível de ser gerenciado. 
 
 **A arquitetura que iremos abordar nesse curso:**
-
-<img width="963" alt="Pasted image 20230920212117" src="https://github.com/thiagoandrecardoso/Spring-Cloud-Study/assets/33556919/decaae20-eac0-4c89-b7c5-0c1ac20882e6">
-
+![[Pasted image 20230920212117.png]]
 
 - **Discovery Server** (Servidor de Descoberta): Ajuda a identificar onde cada serviço está em um sistema distribuído.
 - **Gateway**: É responsável por receber todas as solicitações de clientes e encaminhá-las para os serviços apropriados com base nas informações do Discovery Server. Ele atua como um ponto de entrada único para todas as solicitações, simplificando o acesso aos microserviços. 
@@ -43,7 +36,7 @@ Start Spring:
 - Spring Boot 2.6.4 
 - Packaging Jar
 - Dependências:
-	- Eureka Server
+  - Eureka Server
 
 #### application.yml
 
@@ -71,10 +64,10 @@ Start Spring:
 - Spring Boot 2.6.4 
 - Packaging Jar
 - Dependências:
-	- Spring Web
-	- Lombok
-	- Spring Boot DevTools
-	- H2 database
+  - Spring Web
+  - Lombok
+  - Spring Boot DevTools
+  - H2 database
 
 #### pom.xml
 Configurações adicionais - Spring Cloud:
@@ -392,3 +385,163 @@ Resposta:
 - 200 OK: A solicitação foi bem-sucedida, e os cartões associados ao cliente foram retornados no corpo da resposta.
 - 404 Not Found: Não foram encontrados cartões associados ao CPF fornecido.
 - 400 Bad Request: A solicitação possui um formato de CPF inválido.
+
+## Criação e configuração do Microserviço Avaliador de Crédito
+
+### Documentação do Microserviço cartões:
+### Visão Geral  
+Este microserviço fornece dois endpoints HTTP para criar e recuperar informações dos cartões. 
+#### Endpoint GET: Consultar situação do cliente 
+Este endpoint permite consultar a situação de um cliente com base no CPF fornecido e retorna os dados do cartão e do cliente.
+  
+* **URL**: `/api/cliente/{cpf}`  
+* **Método**: GET  
+* **Tipo de conteúdo**: JSON  
+
+**Parâmetros:**
+- `cpf` (String): O CPF do cliente que você deseja consultar.
+
+**Resposta de Sucesso:**
+- **Código:** 200 OK
+- **Exemplo de Resposta:**
+  
+```json  
+{
+    "cliente": {
+        "cpf": "123.456.789-00",
+        "name": "João da Silva",
+        "age": 35
+    },
+    "cartao": {
+        "name": "João da Silva",
+        "flagCard": "Visa",
+        "rent": 1000.00,
+        "limitRent": 5000.00
+    }
+}  
+```
+
+**Resposta de Erro:**
+
+- **Código:** 404 Not Found
+- **Exemplo de Resposta:**
+```json
+{
+    "mensagem": "Cliente não encontrado."
+}
+```
+
+**Exemplo de Uso:**
+```http
+GET /api/cliente/12345678900
+```
+
+
+#### Endpoint POST: Situação do cliente 
+Este endpoint permite avaliar a situação de um cliente com base no CPF e renda fornecido.
+
+* **URL**: `http://localhost:8080/credit-assessor/client-situation{cpf}`  
+* **Método**: POST  
+* **Tipo de conteúdo**: JSON  
+
+**Parâmetros:**
+- `cpf` (String): O CPF do cliente que você deseja consultar.
+
+**Resposta de Sucesso:**
+- **Código:** 200 OK
+- **Exemplo de Resposta:**
+
+```json
+{
+  "clientData": {
+    "id": 1,
+    "name": "Sarah"
+  },
+  "cardPerClientList": []
+}  
+```
+
+**Resposta de Erro:**
+
+- **Código:** 404 Not Found
+- **Exemplo de Resposta:**
+
+```json
+{
+    "mensagem": "Cliente ou cartão não encontrado"
+}
+```
+
+**Exemplo de Uso:**
+```http
+GET /api/cliente/12345678900
+```
+
+#### Endpoint POST: Solicita cartão
+Este endpoint permite fazer a solicitação de um cartão
+
+* **URL**: `/api/cliente/{cpf}`  
+* **Método**: POST  
+* **Tipo de conteúdo**: JSON  
+
+**Parâmetros:**
+- `cpf` (String): O CPF do cliente que você deseja consultar.
+- `idCard` (Long): Id do cartão.
+- `address` (String): Endereço do cliente.
+
+**Resposta de Sucesso:**
+- **Código:** 200 OK
+- **Exemplo de Resposta:**
+
+```json
+{  
+  "protocol": "1984938437839193",  
+}  
+```
+
+**Resposta de Erro:**
+
+- **Código:** 404 Not Found
+- **Exemplo de Resposta:**
+
+```json
+{
+    "mensagem": "Cartão não encontrado."
+}
+```
+
+**Exemplo de Uso:**
+```http
+GET /api/cliente/12345678900
+```
+
+### Spring Cloud Feign
+
+O Spring Cloud Feign é uma biblioteca do ecossistema Spring Cloud que simplifica a comunicação entre microserviços, permitindo que você faça chamadas a serviços RESTful de forma declarativa, sem a necessidade de escrever código de chamada HTTP manualmente. Isso ajuda a simplificar e agilizar o desenvolvimento de microserviços em um ambiente de nuvem.
+
+[Open Feign](https://spring.io/projects/spring-cloud-openfeign)
+
+#### Dependência:
+
+```xml
+<dependency>  
+    <groupId>org.springframework.cloud</groupId>    
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
+#### Adicionar @notações: 
+- @EnableFeignClients no Application
+
+```java
+@EnableEurekaClient  
+@SpringBootApplication  
+@EnableFeignClients  
+public class MscreditassessorApplication {  
+    public static void main(String[] args) {  
+        SpringApplication.run(MscreditassessorApplication.class, args);  
+    }  
+}
+```
+
+
