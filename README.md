@@ -11,13 +11,16 @@ Considere a hipótese de que milhares de clientes estejam enviando requisições
 - **Concorrência**: Múltiplos clientes fazendo requisições simultâneas podem criar problemas de concorrência. Se o microserviço não for projetado para lidar com múltiplos threads/processos de maneira eficiente, podem ocorrer condições de corrida e inconsistências nos dados.
 
 **Bad Architecture:**
-![[Pasted image 20230920204356.png]]
+
+![Pasted image 20230920204356.png](image%2FPasted%20image%2020230920204356.png)
+
 
 Se tentar resolver criando várias portas, como a 8081, 8082... Você terá que criar várias DNS:
 http://empresa.com/api/clientes deixando assim, impossível de ser gerenciado. 
 
 **A arquitetura que iremos abordar nesse curso:**
-![[Pasted image 20230920212117.png]]
+
+![Pasted image 20230920212117.png](image%2FPasted%20image%2020230920212117.png)
 
 - **Discovery Server** (Servidor de Descoberta): Ajuda a identificar onde cada serviço está em um sistema distribuído.
 - **Gateway**: É responsável por receber todas as solicitações de clientes e encaminhá-las para os serviços apropriados com base nas informações do Discovery Server. Ele atua como um ponto de entrada único para todas as solicitações, simplificando o acesso aos microserviços. 
