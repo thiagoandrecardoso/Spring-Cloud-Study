@@ -472,12 +472,22 @@ Este endpoint permite avaliar a situação de um cliente com base no CPF e renda
 }
 ```
 
+- **Código:** 500 Internal Server Error
+- **Exemplo de Resposta:**
+
+```json
+{
+    "message": "Erro interno do servidor. Tente novamente mais tarde."
+}
+```
+
+
 **Exemplo de Uso:**
 ```http
 GET /api/cliente/12345678900
 ```
 
-#### Endpoint POST: Solicita cartão
+#### Endpoint POST: Solicita cartão (WIP)
 Este endpoint permite fazer a solicitação de um cartão
 
 * **URL**: `/api/cliente/{cpf}`  
