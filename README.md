@@ -557,4 +557,95 @@ public class MscreditassessorApplication {
 }
 ```
 
+### Serviço de Mensageria:
 
+![SCR-20231022-nzrz.png](image%2FSCR-20231022-nzrz.png)
+
+
+#### Instalando o RabbitMQ:
+Site: [rabbitMQ](https://www.rabbitmq.com)
+
+##### Instalando via Docker:
+
+```shell
+# latest RabbitMQ 3.12
+docker run -it --name creditassessorrabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.9-management
+```
+
+##### Acessando:
+Depois de instalado, acessar: http://localhost:15672
+Entrar com usuário e senha padrão: user: guest | senha: guest
+
+##### Criando o Subscriber para a fila de emissão de cartões:
+
+Adicionar no pom.xml do projeto Card a dependência do amqp:
+
+```xml
+<dependency>  
+    <groupId>org.springframework.boot</groupId>    
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+
+Adicionar nova fila no RabbitMQ (http://localhost:15672)
+- Queues
+  - Add a new queue
+  - Coloque apenas o nome da fila: issuing-cards
+  - Add queue
+
+No application.yml adicionar as seguintes linhas:
+
+```yml
+mq:  
+  queues:  
+    issuing-cards: issuing-cards
+```
+
+Na Application:
+Adicionar a anotação `@EnableRabbit` 
+
+```java
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;  
+import org.springframework.boot.SpringApplication;  
+import org.springframework.boot.autoconfigure.SpringBootApplication;  
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;  
+  
+@EnableEurekaClient  
+@SpringBootApplication  
+@EnableRabbit  
+public class CardApplication {  
+    public static void main(String[] args) {  
+        SpringApplication.run(CardApplication.class, args);  
+    }  
+}
+```
+
+Criar dentro do pacote infra ou client a Classe que irá conectar com a fila do RabbitMQ.
+Essa classe deverá ser um `@Componet` 
+
+O método que irá escutar a fila, deverá ser anotado com `@RabbitListener` e devemos repassar qual fila ele deverá escutar.  Abaixo um exemplo:
+
+```java
+@RabbitListener(queues = "${mq.queues.issuing-cards}")
+public void receivingCardIssueRequest(@Payload String payload){  
+    System.out.println(payload);  
+}
+```
+
+Para informar qual o endereço da fila que iremos escutar, devemos adicionar as seguintes configurações do **rabbitmq** no `application.yml`
+
+```yml
+spring:  
+  application:  
+    name: mscards  
+  rabbitmq:  
+    host: localhost  
+    port: 5672  
+    username: guest  
+    password: guest
+```
+
+Rode o eureka e o serviço de cartões, e no RabbitMQ vá em:
+- Queue e click no que você criou;
+- Publish message;
+- Escreva uma mensagem no Payload e confira se apareceu no console da IDE. 
