@@ -578,7 +578,7 @@ Entrar com usuário e senha padrão: user: guest | senha: guest
 
 ##### Criando o Subscriber para a fila de emissão de cartões:
 
-Adicionar no pom.xml do projeto Card a dependência do amqp:
+Adicionar no pom.xml do projeto `Card` a dependência do amqp:
 
 ```xml
 <dependency>  
@@ -649,3 +649,43 @@ Rode o eureka e o serviço de cartões, e no RabbitMQ vá em:
 - Queue e click no que você criou;
 - Publish message;
 - Escreva uma mensagem no Payload e confira se apareceu no console da IDE. 
+
+
+#### Criando endpoint para requisição de MS de cartões no Avaliador de Cartões:
+
+Adicionar no pom.xml do projeto `mscreditassessor` a dependência do amqp:
+
+```xml
+<dependency>  
+    <groupId>org.springframework.boot</groupId>    
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+
+No arquivo `application.yml` adicionar as mesmas configurações que foram colocadas no MS de cartões.
+
+```yml
+spring:  
+  application:  
+    name: mscards  
+  rabbitmq:  
+    host: localhost  
+    port: 5672  
+    username: guest  
+    password: guest
+
+mq:
+  queues:
+    issuing-cards: issuing-cards
+```
+
+Na classe `com.example.card.infra.mqueue.IssuingCardSubscriber` é onde iremos deserializar o payload com a mensagem enviada pelo MS de cartões e salvar esses dados em `ClientCardRepository`. 
+
+Adicionar a anotação `@EnableRabbit` na classe de aplicação `MscreditassessorApplication`. 
+
+Criar a classe: `com.example.mscreditassessor.infra.mqueue.RequestPublisherCard`:
+Essa classe, chamada "RequestPublisherCard," é um componente de publicação em um sistema que utiliza o RabbitMQ para enviar mensagens. Ela tem a responsabilidade de converter um objeto do tipo "CardIssueData" em formato JSON e publicá-lo em uma fila do RabbitMQ usando um "RabbitTemplate." Essencialmente, ela encaminha os dados de emissão de cartão (cardIssueData) como mensagens JSON para a fila especificada no RabbitMQ.
+
+
+
+
