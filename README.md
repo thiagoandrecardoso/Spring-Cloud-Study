@@ -652,6 +652,8 @@ Rode o eureka e o serviço de cartões, e no RabbitMQ vá em:
 
 
 #### Criando endpoint para requisição de MS de cartões no Avaliador de Cartões:
+Link do commit: [github](https://github.com/thiagoandrecardoso/Spring-Cloud-Study/commit/91a232e9cc4e155c568ed43e9fb9013d886521aa)
+
 
 Adicionar no pom.xml do projeto `mscreditassessor` a dependência do amqp:
 
@@ -685,6 +687,8 @@ Adicionar a anotação `@EnableRabbit` na classe de aplicação `Mscreditassesso
 
 Criar a classe: `com.example.mscreditassessor.infra.mqueue.RequestPublisherCard`:
 Essa classe, chamada "RequestPublisherCard," é um componente de publicação em um sistema que utiliza o RabbitMQ para enviar mensagens. Ela tem a responsabilidade de converter um objeto do tipo "CardIssueData" em formato JSON e publicá-lo em uma fila do RabbitMQ usando um "RabbitTemplate." Essencialmente, ela encaminha os dados de emissão de cartão (cardIssueData) como mensagens JSON para a fila especificada no RabbitMQ.
+
+
 
 
 
