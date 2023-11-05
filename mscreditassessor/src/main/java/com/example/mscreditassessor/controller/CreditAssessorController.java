@@ -1,8 +1,6 @@
 package com.example.mscreditassessor.controller;
 
-import com.example.mscreditassessor.domain.model.CardIssueData;
-import com.example.mscreditassessor.domain.model.ClientSituation;
-import com.example.mscreditassessor.domain.model.ProtocolRequestCard;
+import com.example.mscreditassessor.domain.model.*;
 import com.example.mscreditassessor.exceptions.ClientDataNotFoundException;
 import com.example.mscreditassessor.exceptions.ErrorCommunicateMicroServicesException;
 import com.example.mscreditassessor.exceptions.ErrorRequestCardIssueException;
@@ -34,6 +32,16 @@ public class CreditAssessorController {
         } catch (ErrorCommunicateMicroServicesException e){
             HttpStatus httpStatus = HttpStatus.resolve(e.getStatus());
             return ResponseEntity.status(httpStatus != null ? httpStatus : HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity executeEvaluations(@RequestBody DataEvaluation dados) {
+        try {
+            CustomerFeedBack customerFeedBack = creditAssessorService.evaluate(dados.getCpf(), dados.getRent());
+            return ResponseEntity.ok(customerFeedBack);
+        } catch (ClientDataNotFoundException | ErrorCommunicateMicroServicesException e) {
+            throw new RuntimeException(e);
         }
     }
 

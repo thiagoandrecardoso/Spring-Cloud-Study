@@ -13,5 +13,5 @@ import java.util.List;
 @Builder
 public class ClientSituation {
     private ClientData clientData;
-    private List<CardPerClient> cardPerClientList;
+    private List<ApprovedCard> cardPerClientList;
 }
