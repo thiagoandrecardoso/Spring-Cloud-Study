@@ -35,7 +35,7 @@ public class CardsResource {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/rent")
+    @GetMapping(params = "rent")
     public ResponseEntity<List<Card>> getCardsWithRentLessThanOrEqualTo(@RequestParam("rent") Long rent){
         List<Card> cardList = cardService.getCardsWithRentLessThanOrEqualTo(rent);
         return ResponseEntity.ok(cardList);
