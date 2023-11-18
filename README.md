@@ -124,7 +124,7 @@ eureka:
 Este microserviço fornece dois endpoints HTTP para criar e recuperar informações de clientes.  
 
 #### Endpoint POST: Criar um Cliente  
-Crie um novo cliente fornecendo os detalhes necessários no corpo da solicitação.  
+Crie um cliente fornecendo os detalhes necessários no corpo da solicitação.  
   
 * **URL**: `/clients`  
 * **Método**: POST  
@@ -262,7 +262,7 @@ Abra o terminal e rode o comando:
 Este microserviço fornece dois endpoints HTTP para criar e recuperar informações dos cartões.  
 
 #### Endpoint POST: Criar um Cartão  
-Crie um novo cartão fornecendo os detalhes necessários no corpo da solicitação.  
+Crie um cartão fornecendo os detalhes necessários no corpo da solicitação.  
   
 * **URL**: `/cards`  
 * **Método**: POST  
@@ -295,7 +295,7 @@ Erros Possíveis:
 
 
 #### Endpoint GET: Obter Cartões com renda até um valor informado:  
-Este endpoint permite aos usuários recuperar uma lista de cartões de crédito com base em um limite máximo de renda informado.
+Este endpoint permite aos utilizadores recuperar uma lista de cartões de crédito com base em um limite máximo de renda informado.
   
 * **URL**: `/api/cartoes`
 * **Método**: GET  
@@ -351,7 +351,7 @@ Resposta de Sucesso
 
 
 #### Endpoint GET: Buscar Cartões pelo CPF do Cliente
-Este endpoint permite aos usuários buscar cartões de crédito associados a um cliente específico com base no CPF e retornar informações como nome, bandeira e limite do cartão.
+Este endpoint permite aos utilizadores buscar cartões de crédito associados a um cliente específico com base no CPF e retornar informações como nome, bandeira e limite do cartão.
 
 - **URL**: `/api/cards`
 - **Método HTTP**: GET
@@ -391,18 +391,18 @@ Resposta:
 
 ## Criação e configuração do Microserviço Avaliador de Crédito
 
-### Documentação do Microserviço cartões:
+### Documentação do Microserviço Avaliador de cartões:
 ### Visão Geral  
-Este microserviço fornece dois endpoints HTTP para criar e recuperar informações dos cartões. 
+Este microserviço fornece três endpoints HTTP. 
 #### Endpoint GET: Consultar situação do cliente 
 Este endpoint permite consultar a situação de um cliente com base no CPF fornecido e retorna os dados do cartão e do cliente.
   
-* **URL**: `/api/cliente/{cpf}`  
+* **URL**: `/credit-assessor/client-situation`
 * **Método**: GET  
 * **Tipo de conteúdo**: JSON  
 
 **Parâmetros:**
-- `cpf` (String): O CPF do cliente que você deseja consultar.
+- `cpf` (‘String’, parâmetro de consulta): O CPF do cliente que você deseja consultar.
 
 **Resposta de Sucesso:**
 - **Código:** 200 OK
@@ -434,21 +434,84 @@ Este endpoint permite consultar a situação de um cliente com base no CPF forne
 }
 ```
 
-**Exemplo de Uso:**
-```http
-GET /api/cliente/12345678900
+- **Código:** 500 Internal Server Error (ou outro código de status conforme apropriado)
+- **Exemplo de Resposta:**
+```json
+{
+    "mensagem": "Erro na comunicação com os microserviços."
+}
 ```
 
+**Exemplo de Uso:**
+```http
+GET /api/client-situation?cpf=12345678900
+```
 
-#### Endpoint POST: Situação do cliente 
-Este endpoint permite avaliar a situação de um cliente com base no CPF e renda fornecido.
+#### Endpoint POST: Executar Avaliações
+Este endpoint permite executar avaliações com base nos dados fornecidos e retorna o feedback do cliente.
 
-* **URL**: `http://localhost:8080/credit-assessor/client-situation{cpf}`  
-* **Método**: POST  
-* **Tipo de conteúdo**: JSON  
+* **URL**: `/credit-assessor`
+* **Método**: POST
+* **Tipo de conteúdo**: JSON
+
+**Corpo da Solicitação:**
+- `cpf` (‘String’): O CPF do cliente para avaliação.
+- `rent` (Double): O valor da renda a ser avaliado.
+
+**Resposta de Sucesso:**
+- **Código:** 200 OK
+- **Exemplo de Resposta:**
+```json
+{
+  "feedback": [
+    {
+      "cardName": "Cartão Ouro",
+      "flagCard": "MasterCard",
+      "rent": 1000.00,
+      "limitRent": 5000.00
+    },
+    {
+      "cardName": "Cartão Prata",
+      "flagCard": "Visa",
+      "rent": 800.00,
+      "limitRent": 3000.00
+    }
+  ]
+}
+```
+
+**Resposta de Erro:**
+
+- **Código:** 500 Internal Server Error (ou outro código de status conforme apropriado)
+- **Exemplo de Resposta:**
+```json
+{
+    "mensagem": "Erro na comunicação com os microserviços."
+}
+```
+
+**Exemplo de Uso:**
+```http
+POST /credit-assessor
+Content-Type: application/json
+{
+    "cpf": "123.456.789-00",
+    "rent": 1000.00
+}
+```
+
+#### Endpoint POST: Solicita cartão (WIP)
+Este endpoint permite solicitar a emissão de um cartão com base nos dados fornecidos e retorna o protocolo de solicitação.
+
+* **URL**: `/credit-assessor/request-card`
+* **Método**: POST
+* **Tipo de conteúdo**: JSON
 
 **Parâmetros:**
-- `cpf` (String): O CPF do cliente que você deseja consultar.
+- `idCard` (Long): O identificador único do cartão.
+- `cpf` (String): O CPF do cliente para o qual o cartão será solicitado.
+- `address` (String): O endereço do cliente para envio do cartão.
+- `limitFree` (BigDecimal): O limite de crédito desejado para o cartão.
 
 **Resposta de Sucesso:**
 - **Código:** 200 OK
@@ -456,76 +519,32 @@ Este endpoint permite avaliar a situação de um cliente com base no CPF e renda
 
 ```json
 {
-  "clientData": {
-    "id": 1,
-    "name": "Sarah"
-  },
-  "cardPerClientList": []
-}  
+  "protocol": "1a2b3c4d-5e6f-7g8h-9i10j11k12l"
+} 
 ```
 
 **Resposta de Erro:**
-
-- **Código:** 404 Not Found
-- **Exemplo de Resposta:**
-
-```json
-{
-    "mensagem": "Cliente ou cartão não encontrado"
-}
-```
 
 - **Código:** 500 Internal Server Error
 - **Exemplo de Resposta:**
 
 ```json
 {
-    "message": "Erro interno do servidor. Tente novamente mais tarde."
+  "mensagem": "Erro na solicitação de emissão do cartão."
 }
 ```
 
-
 **Exemplo de Uso:**
 ```http
-GET /api/cliente/12345678900
-```
+POST /credit-assessor/request-card
+Content-Type: application/json
 
-#### Endpoint POST: Solicita cartão (WIP)
-Este endpoint permite fazer a solicitação de um cartão
-
-* **URL**: `/api/cliente/{cpf}`  
-* **Método**: POST  
-* **Tipo de conteúdo**: JSON  
-
-**Parâmetros:**
-- `cpf` (String): O CPF do cliente que você deseja consultar.
-- `idCard` (Long): Id do cartão.
-- `address` (String): Endereço do cliente.
-
-**Resposta de Sucesso:**
-- **Código:** 200 OK
-- **Exemplo de Resposta:**
-
-```json
-{  
-  "protocol": "1984938437839193",  
-}  
-```
-
-**Resposta de Erro:**
-
-- **Código:** 404 Not Found
-- **Exemplo de Resposta:**
-
-```json
 {
-    "mensagem": "Cartão não encontrado."
+    "idCard": 123456,
+    "cpf": "123.456.789-00",
+    "address": "Rua Exemplo, 123",
+    "limitFree": 2000.00
 }
-```
-
-**Exemplo de Uso:**
-```http
-GET /api/cliente/12345678900
 ```
 
 ### Spring Cloud Feign
