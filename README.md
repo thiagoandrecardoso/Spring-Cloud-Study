@@ -104,8 +104,8 @@ spring:
   application:  
     name: msclients  
   
-# Quando se coloca a porta 0, ele coloca em uma porta aleatória.  
-# Devemos fazer isso, pois se subimos varias aplicações, iriam ficar na mesma porta.  
+# Quando se coloca a porta 0, ele coloca numa porta aleatória.  
+# Devemos fazer isso, pois se subimos várias aplicações, iriam ficar na mesma porta.  
 server:  
   port: 0  
   
@@ -115,7 +115,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka  
   instance:  
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}  
-# instance-id deve ser o nome mais um valor aleatória, para não ficarem todas as instancias com o mesmo nome.
+# instance-id deve ser o nome mais um valor aleatória, para não ficarem todas as instâncias com o mesmo nome.
 ```
 
 
@@ -592,7 +592,7 @@ docker run -it --name creditassessorrabbitmq -p 5672:5672 -p 15672:15672 rabbitm
 ```
 
 ##### Acessando:
-Depois de instalado, acessar: http://localhost:15672
+Após instalado, acessar: http://localhost:15672
 Entrar com usuário e senha padrão: user: guest | senha: guest
 
 ##### Criando o Subscriber para a fila de emissão de cartões:
@@ -707,6 +707,42 @@ Adicionar a anotação `@EnableRabbit` na classe de aplicação `Mscreditassesso
 Criar a classe: `com.example.mscreditassessor.infra.mqueue.RequestPublisherCard`:
 Essa classe, chamada "RequestPublisherCard," é um componente de publicação em um sistema que utiliza o RabbitMQ para enviar mensagens. Ela tem a responsabilidade de converter um objeto do tipo "CardIssueData" em formato JSON e publicá-lo em uma fila do RabbitMQ usando um "RabbitTemplate." Essencialmente, ela encaminha os dados de emissão de cartão (cardIssueData) como mensagens JSON para a fila especificada no RabbitMQ.
 
+### Segurança - Keycloak:
+https://www.keycloak.org
+
+#### Instalação via Docker: 
+https://www.keycloak.org/getting-started/getting-started-docker
+
+- Comando para instalar via Docker:
+```shell
+docker run --name keycloak -p 8081:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:22.0.5 start-dev
+```
+- Acessar online pelo link: http://localhost:8081
+  - Para fazer ‘login’, click em Administration Console e utilize o ‘login’ e senha configurados no comando acima: admim : admim.
+
+- Criar um REALM:
+  - http://localhost:8081/admin/master/console/#/master/add-realm
+  - Adicione um nome: mscourserealm
+  - Clicar em CREATE
+
+![img.png](image/img.png) 
+
+- Criar um Client: 
+  - http://localhost:8081/admin/master/console/#/mscourserealm/clients/add-client
+
+![img.png](image/createclient.png)
+
+![img.png](img.png)
+
+![img_1.png](img_1.png)
+
+![img_2.png](img_2.png)
+
+![img_3.png](img_3.png)
+
+- Clique em Salvar / Criar
+
+#### Configurando o Api Gateway
 
 
 
