@@ -732,18 +732,74 @@ docker run --name keycloak -p 8081:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMI
 
 ![img.png](image/createclient.png)
 
-![img.png](img.png)
+![img.png](image/mscreditKC.png)
 
-![img_1.png](img_1.png)
+![img_1.png](image/accesssettings.png)
 
-![img_2.png](img_2.png)
+![img_2.png](image/copability.png)
 
-![img_3.png](img_3.png)
+![img_3.png](image/logingsettings.png)
 
 - Clique em Salvar / Criar
 
 #### Configurando o Api Gateway
+Adicionar a dependência:
 
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+No arquivo `application.yml` adicionar as mesmas configurações:
+
+Acesse: [Realm Settings](http://localhost:8081/admin/master/console/#/mscourserealm/realm-settings)
+Clique em: **OpenID Endpoint Configuration** [link](http://localhost:8081/realms/mscourserealm/.well-known/openid-configuration)
+Pegue a URL do campo "issuer": "http://localhost:8081/realms/mscourserealm" e cole no `issue-uri` de security
+
+```yaml
+spring:
+  application:
+    name: mscloudgateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/mscourserealm
+```
+
+Configurar o cliente com o token:
+Marque e selecione o que tiver sendo apontado pelas setas **vermelhas** e preencha o destaque em **amarelo** com a seguinte
+informação:
+Vá novamente em: **OpenID Endpoint Configuration**
+Cole no campo destacado em **amarelo** a URL da linha: 
+"token_endpoint": "http://localhost:8081/realms/mscourserealm/protocol/openid-connect/token"
+
+![img_4.png](image/insomiaoauth2.png)
+
+No campo CLIENT ID, cole o nome do seu clien id que você configurou no keycloak.
+
+![img_5.png](image/clientidKC.png)
+
+Em CLIENT SECRET, cole o Secret que está no keycloak.
+
+![img_6.png](image/credentials.png)
+
+Resultado:
+
+![img_7.png](image/insomiatoken.png)
+
+Vá em https://jwt.io e cole o seu Token gerado. 
+
+Usando o ‘Token’ na requisição:
+
+![img_8.png](image/addtokeninsomia.png)
 
 
 
