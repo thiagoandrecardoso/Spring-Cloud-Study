@@ -4,7 +4,8 @@ import com.example.clint.application.representation.ClientRequest;
 import com.example.clint.domain.Client;
 import com.example.clint.service.ClientService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,8 +15,8 @@ import java.net.URI;
 @RestController
 @RequestMapping("clients")
 @RequiredArgsConstructor
-@Slf4j
 public class ClientResource {
+    private static final Logger log = LoggerFactory.getLogger(ClientResource.class);
     private final ClientService clientService;
 
     @GetMapping

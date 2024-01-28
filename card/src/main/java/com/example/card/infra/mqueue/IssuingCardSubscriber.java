@@ -7,12 +7,14 @@ import com.example.card.infra.repository.CardRepository;
 import com.example.card.infra.repository.ClientCardRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class IssuingCardSubscriber {
 
     private final CardRepository cardRepository;
@@ -31,7 +33,7 @@ public class IssuingCardSubscriber {
             clientCard.setLimitRent(data.getLimitFree());
             clientCardRepository.save(clientCard);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error on receiving card issue request {}", e.getMessage());
         }
     }
 }
