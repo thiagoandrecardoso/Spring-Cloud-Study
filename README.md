@@ -802,7 +802,7 @@ Usando o ‘Token’ na requisição:
 ![img_8.png](image/addtokeninsomia.png)
 
 
-## OpenAPI:
+## OpenAPI: Gettting Started
 https://springdoc.org/
 
 Access: http://localhost:8080/swagger-ui/index.html
