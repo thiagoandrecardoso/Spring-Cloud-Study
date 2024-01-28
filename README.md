@@ -802,5 +802,18 @@ Usando o ‘Token’ na requisição:
 ![img_8.png](image/addtokeninsomia.png)
 
 
+## OpenAPI:
+https://springdoc.org/
 
+Access: http://localhost:8080/swagger-ui/index.html
+trocar 8080 pela porta atual do ms. 
+
+#### Dependência:
+```xml
+<dependency>
+  <groupId>org.springdoc</groupId>
+  <artifactId>springdoc-openapi-ui</artifactId>
+  <version>1.6.14</version>
+</dependency>
+```
 
