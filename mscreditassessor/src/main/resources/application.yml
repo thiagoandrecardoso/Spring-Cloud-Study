@@ -20,3 +20,13 @@ eureka:
 mq:
   queues:
     issuing-cards: issuing-cards
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  file:
+    name: ./logs/mscreditassessor.log
