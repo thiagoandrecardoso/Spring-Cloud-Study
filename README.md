@@ -818,3 +818,53 @@ trocar 8080 pela porta atual do ms.
 ```
 
 ## Docker:
+
+### Construção do Artefato
+Primeiro, você precisa construir o artefato do seu projeto, que é um arquivo JAR executável. No diretório raiz do seu projeto, execute o seguinte comando Maven para limpar quaisquer builds anteriores e construir o artefato, pulando os testes para agilizar o processo:
+
+```shell
+./mvnw clean package -DskipTests
+```
+
+Esse comando gera o arquivo JAR executável dentro do diretório target do seu projeto.
+
+### Executando o Artefato (Opcional)
+Para testar se o artefato foi construído com sucesso, você pode executar o arquivo JAR diretamente:
+```shell
+cd target
+java -jar eurekaserver-0.0.1-SNAPSHOT.jar
+```
+Isso iniciará o servidor Eureka localmente. Certifique-se de que tudo está funcionando conforme esperado antes de prosseguir para a próxima etapa.
+
+### Criando o Dockerfile
+Volte ao diretório raiz do seu projeto e crie um arquivo chamado Dockerfile (sem extensão). Esse arquivo contém as instruções para construir a imagem Docker do seu servidor Eureka. Adicione o seguinte conteúdo ao Dockerfile:
+https://hub.docker.com/_/openjdk 
+
+```dockerfile
+# Use a imagem base oficial do OpenJDK
+FROM openjdk:11
+# Define o diretório de trabalho dentro do contêiner
+WORKDIR /app
+# Copia o arquivo JAR do servidor Eureka para o contêiner
+COPY ./target/eurekaserver-0.0.1-SNAPSHOT.jar app.jar
+# Expõe a porta 8761 no contêiner para permitir o acesso ao servidor Eureka
+EXPOSE 8761
+# Define o comando para iniciar o servidor Eureka
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+### Construindo a Imagem Docker
+No terminal, no diretório raiz do seu projeto, execute o seguinte comando para construir a imagem Docker do seu servidor Eureka:
+```shell
+docker build --tag eureka-server .
+```
+Este comando lê o Dockerfile no diretório atual e constrói uma imagem Docker chamada eureka-server.
+
+### Executando o Contêiner Docker
+Após a construção da imagem, você pode iniciar um contêiner com base nessa imagem usando o seguinte comando:
+```shell
+docker run --name eureka-server -p 8761:8761 eureka-server
+```
+Este comando inicia um contêiner chamado eureka-server, mapeando a porta 8761 do contêiner para a porta 8761 do host, permitindo que você acesse o servidor Eureka através da porta 8761 do seu host.
+
+
